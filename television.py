@@ -9,13 +9,10 @@ class Television:
         Model of a TV complete with power, mute, volume, and channel switching.
         """
 
-        self._status: bool = False
-        self._muted: bool = False
-        self._volume: int = Television.MIN_VOLUME
-        self._channel: int = Television.MIN_CHANNEL
-
-        # Needed to save the volume to return to after unmuting
-        self._prev_volume: int = self._volume
+        self.__status: bool = False
+        self.__muted: bool = False
+        self.__volume: int = Television.MIN_VOLUME
+        self.__channel: int = Television.MIN_CHANNEL
 
     def power(self) -> None:
         """
@@ -23,10 +20,10 @@ class Television:
         :return:
         """
 
-        if self._status:
-            self._status = False
+        if self.__status:
+            self.__status = False
         else:
-            self._status = True
+            self.__status = True
 
     def mute(self) -> None:
         """
@@ -35,20 +32,21 @@ class Television:
         :return:
         """
 
-        if not self._status:
+        if not self.__status:
             return
 
-        if self._muted:
+        if self.__muted:
             # If currently muted we should unmute and set the volume
             # to the value we previously saved
-            self._muted = False
-            self._volume = self._prev_volume
+            self.__muted = False
+            if self.prev_volume:
+                self.__volume = self.prev_volume
         else:
-            # If not currently muted we mute, save our "true" volume
-            # and then set the volume to 0
-            self._prev_volume = self._volume
-            self._volume = Television.MIN_VOLUME
-            self._muted = True
+            # If not currently muted we mute, set vol to 0, and
+            # save our previous volume
+            self.prev_volume = self.__volume
+            self.__volume = Television.MIN_VOLUME
+            self.__muted = True
 
     def channel_up(self) -> None:
         """
@@ -57,12 +55,12 @@ class Television:
         :return:
         """
 
-        if not self._status:
+        if not self.__status:
             return
 
-        self._channel += 1
-        if self._channel > Television.MAX_CHANNEL:
-            self._channel = Television.MIN_CHANNEL
+        self.__channel += 1
+        if self.__channel > Television.MAX_CHANNEL:
+            self.__channel = Television.MIN_CHANNEL
 
     def channel_down(self) -> None:
         """
@@ -71,12 +69,12 @@ class Television:
         :return:
         """
 
-        if not self._status:
+        if not self.__status:
             return
 
-        self._channel -= 1
-        if self._channel < Television.MIN_CHANNEL:
-            self._channel = Television.MAX_CHANNEL
+        self.__channel -= 1
+        if self.__channel < Television.MIN_CHANNEL:
+            self.__channel = Television.MAX_CHANNEL
 
     def volume_up(self) -> None:
         """
@@ -85,16 +83,16 @@ class Television:
         :return:
         """
 
-        if not self._status:
+        if not self.__status:
             return
 
-        if self._muted:
+        if self.__muted:
             self.mute()
 
-        if self._volume == Television.MAX_VOLUME:
+        if self.__volume == Television.MAX_VOLUME:
             return
 
-        self._volume += 1
+        self.__volume += 1
 
     def volume_down(self) -> None:
         """
@@ -103,20 +101,20 @@ class Television:
         :return:
         """
 
-        if not self._status:
+        if not self.__status:
             return
 
-        if self._muted:
+        if self.__muted:
             self.mute()
 
-        if self._volume == Television.MIN_VOLUME:
+        if self.__volume == Television.MIN_VOLUME:
             return
 
-        self._volume -= 1
+        self.__volume -= 1
 
     def __str__(self) -> str:
         """
         Returns a brief summary of the status of the TV.
         :return: str
         """
-        return f"Power = {self._status}, Channel = {self._channel}, Volume = {self._volume}"
+        return f"Power = {self.__status}, Channel = {self.__channel}, Volume = {self.__volume}"
